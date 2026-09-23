@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delve ilvl útmutató</title>
+    <style>
+        :root {
+            --bg: #f5f4f9;
+            --surface: #ffffff;
+            --surface-2: #eeecf4;
+            --text: #1c1930;
+            --muted: #5f5a75;
+            --border: #dcd8e7;
+            --adventurer: #23874b;
+            --adventurer-soft: #23874b1f;
+            --veteran: #b86e12;
+            --veteran-soft: #b86e121f;
+            --champion: #8a36d4;
+            --champion-soft: #8a36d41f;
+            --marker: #d6245a;
+            color-scheme: light;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --bg: #0d0b14;
+                --surface: #17141f;
+                --surface-2: #211d2c;
+                --text: #ece9f5;
+                --muted: #a39db7;
+                --border: #2f2a3d;
+                --adventurer: #4cc47a;
+                --adventurer-soft: #4cc47a24;
+                --veteran: #f0a23c;
+                --veteran-soft: #f0a23c24;
+                --champion: #b77cf2;
+                --champion-soft: #b77cf229;
+                --marker: #ff5c8a;
+                color-scheme: dark;
+            }
+        }
+        :root[data-theme="dark"] {
+            --bg: #0d0b14;
+            --surface: #17141f;
+            --surface-2: #211d2c;
+            --text: #ece9f5;
+            --muted: #a39db7;
+            --border: #2f2a3d;
+            --adventurer: #4cc47a;
+            --adventurer-soft: #4cc47a24;
+            --veteran: #f0a23c;
+            --veteran-soft: #f0a23c24;
+            --champion: #b77cf2;
+            --champion-soft: #b77cf229;
+            --marker: #ff5c8a;
+            color-scheme: dark;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.5;
+            margin: 0;
+        }
+        main {
+            margin: 0 auto;
+            max-width: 880px;
+            padding: 24px 16px 48px;
+        }
+        nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        nav a {
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            color: var(--muted);
+            font-size: .85rem;
+            padding: 4px 14px;
+            text-decoration: none;
+        }
+        nav a[aria-current="page"] {
+            background: var(--text);
+            border-color: var(--text);
+            color: var(--bg);
+        }
+        h1 {
+            font-size: 1.9rem;
+            line-height: 1.2;
+            margin: 0 0 6px;
+        }
+        h2 {
+            font-size: 1.1rem;
+            margin: 0 0 14px;
+        }
+        .sub {
+            color: var(--muted);
+            margin: 0 0 28px;
+        }
+        section {
+            margin-bottom: 28px;
+        }
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .adventurer {
+            --c: var(--adventurer);
+            --c-soft: var(--adventurer-soft);
+        }
+        .veteran {
+            --c: var(--veteran);
+            --c-soft: var(--veteran-soft);
+        }
+        .champion {
+            --c: var(--champion);
+            --c-soft: var(--champion-soft);
+        }
+
+        /* --- Kalkulátor --- */
+        .calc {
+            align-items: center;
+            display: grid;
+            gap: 20px;
+            grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+        }
+        .calc label {
+            color: var(--muted);
+            display: block;
+            font-size: .85rem;
+            margin-bottom: 6px;
+        }
+        .calc input[type="number"] {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1.6rem;
+            font-variant-numeric: tabular-nums;
+            font-weight: 700;
+            padding: 8px 12px;
+            width: 100%;
+        }
+        .calc input[type="range"] {
+            accent-color: var(--marker);
+            margin-top: 12px;
+            width: 100%;
+        }
+        .verdict {
+            border-left: 4px solid var(--c, var(--border));
+            padding-left: 16px;
+        }
+        .verdict .label {
+            color: var(--muted);
+            font-size: .85rem;
+        }
+        .verdict .name {
+            color: var(--c, var(--text));
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+        .verdict p {
+            margin: 6px 0 0;
+        }
+        .verdict .extra {
+            color: var(--muted);
+            font-size: .9rem;
+        }
+
+        /* --- Tier táblázat --- */
+        .tiers {
+            border-collapse: collapse;
+            font-variant-numeric: tabular-nums;
+            width: 100%;
+        }
+        .tiers th,
+        .tiers td {
+            border-bottom: 1px solid var(--border);
+            padding: 8px 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+        .tiers th {
+            color: var(--muted);
+            font-size: .8rem;
+            font-weight: 600;
+            vertical-align: bottom;
+        }
+        .tiers tbody tr:last-child td {
+            border-bottom: 0;
+        }
+        .tiers td:first-child {
+            border-left: 4px solid var(--c);
+            color: var(--c);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+        .tiers tr.gap td {
+            border-top: 2px solid var(--border);
+        }
+        .tiers tr.active td {
+            background: var(--c-soft);
+        }
+        .tiers tr.active td:first-child::after {
+            content: " ◂";
+        }
+        .tiers b {
+            font-size: 1.05rem;
+        }
+        .tiers small {
+            color: var(--muted);
+            display: block;
+            font-size: .78rem;
+            line-height: 1.3;
+        }
+        .est {
+            color: var(--muted);
+            font-weight: 400;
+        }
+        .none {
+            color: var(--muted);
+        }
+
+        /* --- Sávdiagram --- */
+        .chart {
+            padding-top: 24px;
+            position: relative;
+        }
+        .row {
+            align-items: center;
+            display: grid;
+            gap: 12px;
+            grid-template-columns: 64px minmax(0, 1fr);
+            height: 32px;
+        }
+        .row .rname {
+            color: var(--c);
+            font-size: .9rem;
+            font-weight: 700;
+        }
+        .track {
+            background: var(--surface-2);
+            border-radius: 5px;
+            height: 16px;
+            position: relative;
+        }
+        .band {
+            background: var(--c);
+            border-radius: 5px;
+            height: 100%;
+            position: absolute;
+            top: 0;
+        }
+        .band.fade-left {
+            background: linear-gradient(to right, transparent, var(--c) 60%);
+        }
+        .band.tail {
+            background: repeating-linear-gradient(45deg, var(--c-soft) 0 5px, transparent 5px 10px);
+            border: 1px dashed var(--c);
+        }
+        .tick {
+            background: var(--surface);
+            border: 2px solid var(--text);
+            height: 10px;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+            width: 10px;
+        }
+        .tick.vault {
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .axis {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: 64px minmax(0, 1fr);
+            margin-top: 4px;
+        }
+        .axis .scale {
+            color: var(--muted);
+            font-size: .75rem;
+            font-variant-numeric: tabular-nums;
+            height: 18px;
+            position: relative;
+        }
+        .axis .scale span {
+            position: absolute;
+            transform: translateX(-50%);
+        }
+        .you {
+            bottom: 22px;
+            left: 76px;
+            pointer-events: none;
+            position: absolute;
+            right: 0;
+            top: 16px;
+        }
+        .you .line {
+            background: var(--marker);
+            bottom: 0;
+            position: absolute;
+            top: 0;
+            transform: translateX(-1px);
+            width: 2px;
+        }
+        .you .tag {
+            background: var(--marker);
+            border-radius: 4px;
+            color: #fff;
+            font-size: .72rem;
+            font-weight: 700;
+            padding: 1px 6px;
+            position: absolute;
+            top: -16px;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+        .legend {
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            font-size: .85rem;
+            gap: 8px 20px;
+            margin-top: 14px;
+        }
+        .legend span {
+            align-items: center;
+            display: inline-flex;
+            gap: 8px;
+        }
+        .legend .tick {
+            position: static;
+            transform: rotate(45deg);
+        }
+        .legend .tick.vault {
+            transform: none;
+        }
+        .legend .sw {
+            border-radius: 3px;
+            display: inline-block;
+            height: 12px;
+            width: 22px;
+        }
+
+        .notes {
+            color: var(--muted);
+            font-size: .9rem;
+        }
+        .notes ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .notes li + li {
+            margin-top: 6px;
+        }
+
+        @media (max-width: 720px) {
+            .calc {
+                grid-template-columns: minmax(0, 1fr);
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+        @media (max-width: 420px) {
+            .panel {
+                padding: 16px 12px;
+            }
+            .tiers th,
+            .tiers td {
+                padding: 7px 5px;
+            }
+            .row,
+            .axis {
+                gap: 8px;
+                grid-template-columns: 52px minmax(0, 1fr);
+            }
+            .row .rname {
+                font-size: .8rem;
+            }
+            .axis .scale .minor {
+                display: none;
+            }
+            .you {
+                left: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <nav>
+            <a href="prey.html">Prey</a>
+            <a href="delves.html" aria-current="page">Delve</a>
+        </nav>
+
+        <h1>Hányas ilvl-lel melyik Delve tier?</h1>
+        <p class="sub">World of Warcraft: Midnight · Season 2 (12.1) · Bountiful Delve, Tier 1–11 · átlagos felszerelt item level alapján</p>
+
+        <section class="panel">
+            <div class="calc">
+                <div>
+                    <label for="ilvl">A te item leveled</label>
+                    <input id="ilvl" type="number" min="200" max="340" step="1" value="280" inputmode="numeric">
+                    <input id="ilvl-range" type="range" min="250" max="320" step="1" value="280" aria-label="Item level csúszka">
+                </div>
+                <div class="verdict" id="verdict">
+                    <div class="label">Neked most ez éri meg:</div>
+                    <div class="name" id="verdict-name">–</div>
+                    <p id="verdict-text"></p>
+                    <p class="extra" id="verdict-extra"></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Tierek</h2>
+            <table class="tiers">
+                <thead>
+                    <tr>
+                        <th>Tier</th>
+                        <th>Ajánlott ilvl</th>
+                        <th>Bountiful láda</th>
+                        <th>Térkép / Vault</th>
+                    </tr>
+                </thead>
+                <tbody id="tier-rows"></tbody>
+            </table>
+        </section>
+
+        <section class="panel">
+            <h2>Tartományok egy pillantásra</h2>
+            <div class="chart" id="chart"></div>
+            <div class="legend">
+                <span><i class="sw" style="background: var(--adventurer)"></i>Adventurer láda</span>
+                <span><i class="sw" style="background: var(--veteran)"></i>Veteran láda</span>
+                <span><i class="sw" style="background: var(--champion)"></i>Champion láda</span>
+                <span><i class="sw" style="background: repeating-linear-gradient(45deg, var(--surface-2) 0 4px, var(--muted) 4px 6px)"></i>már csak crestért</span>
+                <span><i class="tick"></i>láda ilvl</span>
+                <span><i class="tick vault"></i>térkép / vault ilvl</span>
+            </div>
+        </section>
+
+        <section class="notes">
+            <h2>Amit érdemes tudni</h2>
+            <ul>
+                <li>A gear Tier 8-nál tetőzik: a láda ott 295 (Champion 2/6), a térkép és a Great Vault 305 (Hero 1/6). Tier 9–11 nem ad jobb itemet, csak crestekért, a Delver's Journey-ért, Gilded Stash-ért és achievementekért érdemes.</li>
+                <li>Tier 4-től a Bountiful láda Restored Coffer Key-t kér. Kulcs nélkül a delve végi loot Tier 3-nál (272) megáll.</li>
+                <li>A térkép (Trovehunter's Bounty) csak Tier 4+ delve után működik. A Tier 4–7 térkép-értékeket guide-okból vettem; Tier 8-nál a térkép és a Great Vault is 305. Tier 1–3-ra nem találtam megbízható vault-adatot.</li>
+                <li>A * jelű láda-értékek (Tier 2 és 6) becslések a trackek lépcsői alapján (Tier 1–4 Adventurer 1–4/6, Tier 5–6 Veteran 1–2/6).</li>
+                <li>Az „ajánlott ilvl” saját becslés, nem a játék hivatalos száma: Season 1-ben Tier 7-hez kb. 235 kellett (Season 2-ben +46 → ~281), Tier 11-hez most kb. 309 ajánlott; a köztes tiereket ebből vezettem le. Class/spec és a companion buildje sokat számít.</li>
+            </ul>
+        </section>
+    </main>
+
+    <script>
+        'use strict';
+
+        const MIN = 250;
+        const MAX = 320;
+        const GEAR_CAP_TIER = 8;
+
+        // entry: becsült ajánlott ilvl; est: a láda-érték becslés
+        const TIERS = [
+            { t: 1, entry: 0, track: 'adventurer', coffer: 266, cTrack: 'Adventurer 1/6' },
+            { t: 2, entry: 255, track: 'adventurer', coffer: 269, cTrack: 'Adventurer 2/6', est: true },
+            { t: 3, entry: 260, track: 'adventurer', coffer: 272, cTrack: 'Adventurer 3/6' },
+            { t: 4, entry: 265, track: 'adventurer', coffer: 276, cTrack: 'Adventurer 4/6', vault: 282, vTrack: 'Veteran 2/6' },
+            { t: 5, entry: 270, track: 'veteran', coffer: 279, cTrack: 'Veteran 1/6', vault: 289, vTrack: 'Veteran 4/6' },
+            { t: 6, entry: 275, track: 'veteran', coffer: 282, cTrack: 'Veteran 2/6', est: true, vault: 295, vTrack: 'Champion 2/6' },
+            { t: 7, entry: 280, track: 'champion', coffer: 292, cTrack: 'Champion 1/6', vault: 302, vTrack: 'Champion 4/6' },
+            { t: 8, entry: 288, track: 'champion', coffer: 295, cTrack: 'Champion 2/6', vault: 305, vTrack: 'Hero 1/6' },
+            { t: 9, entry: 295, track: 'champion', coffer: 295, cTrack: 'Champion 2/6', vault: 305, vTrack: 'Hero 1/6' },
+            { t: 10, entry: 302, track: 'champion', coffer: 295, cTrack: 'Champion 2/6', vault: 305, vTrack: 'Hero 1/6' },
+            { t: 11, entry: 309, track: 'champion', coffer: 295, cTrack: 'Champion 2/6', vault: 305, vTrack: 'Hero 1/6' },
+        ];
+
+        const pct = (v) => ((Math.min(Math.max(v, MIN), MAX) - MIN) / (MAX - MIN)) * 100;
+
+        const buildTable = () => {
+            document.getElementById('tier-rows').innerHTML = TIERS.map((d) => {
+                const entry = d.entry ? `~${d.entry}` : '90-es szinttől';
+                const coffer = `<b>${d.coffer}</b>${d.est ? '<span class="est">*</span>' : ''}<small>${d.cTrack}</small>`;
+                const vault = d.vault ? `<b>${d.vault}</b><small>${d.vTrack}</small>` : '<span class="none">–</span>';
+                const cls = [d.track, d.t === GEAR_CAP_TIER + 1 ? 'gap' : ''].join(' ');
+                return `<tr class="${cls}" data-tier="${d.t}"><td>T${d.t}</td><td>${entry}</td><td>${coffer}</td><td>${vault}</td></tr>`;
+            }).join('');
+        };
+
+        const buildChart = () => {
+            const rows = TIERS.map((d, i) => {
+                const next = TIERS[i + 1];
+                const from = d.t === 1 ? MIN : d.entry;
+                let bands = '';
+                if (d.t < GEAR_CAP_TIER) {
+                    bands = `<div class="band${d.t === 1 ? ' fade-left' : ''}" style="left:${pct(from)}%;width:${pct(next.entry) - pct(from)}%"></div>`;
+                } else if (d.t === GEAR_CAP_TIER) {
+                    bands = `<div class="band" style="left:${pct(from)}%;width:${pct(d.vault) - pct(from)}%"></div>`
+                        + `<div class="band tail" style="left:${pct(d.vault)}%;width:${100 - pct(d.vault)}%"></div>`;
+                } else {
+                    bands = `<div class="band tail" style="left:${pct(from)}%;width:${100 - pct(from)}%"></div>`;
+                }
+                const vaultTick = d.vault
+                    ? `<i class="tick vault" style="left:${pct(d.vault)}%" title="Térkép / vault: ${d.vault}"></i>`
+                    : '';
+                return `
+                    <div class="row ${d.track}">
+                        <div class="rname">Tier ${d.t}</div>
+                        <div class="track">
+                            ${bands}
+                            <i class="tick" style="left:${pct(d.coffer)}%" title="Láda: ${d.coffer}"></i>
+                            ${vaultTick}
+                        </div>
+                    </div>`;
+            }).join('');
+
+            const ticks = [];
+            for (let v = MIN; v <= MAX; v += 10) {
+                ticks.push(`<span${(v - MIN) % 20 ? ' class="minor"' : ''} style="left:${pct(v)}%">${v}</span>`);
+            }
+
+            document.getElementById('chart').innerHTML = `
+                ${rows}
+                <div class="axis"><div></div><div class="scale">${ticks.join('')}</div></div>
+                <div class="you"><div class="line" id="you-line"></div><div class="tag" id="you-tag"></div></div>`;
+        };
+
+        const recommend = (ilvl) => {
+            const reachable = TIERS.filter((d) => d.entry <= ilvl);
+            const best = reachable[reachable.length - 1];
+            const cap = TIERS[GEAR_CAP_TIER - 1];
+
+            // Ha a gear már nem jobb, a crestek miatt a legmagasabb bírt tier a nyerő.
+            if (ilvl >= cap.vault) {
+                return {
+                    tier: best,
+                    text: 'Gearben a delve-ek már nem adnak upgrade-et, így a crestek és a Delver\'s Journey miatt a legmagasabb tier éri meg, amit bírsz.',
+                    extra: best.t < TIERS.length
+                        ? `Tier ${best.t + 1} kb. ${TIERS[best.t].entry} ilvl-től.`
+                        : 'Ez a legnehezebb tier.',
+                };
+            }
+
+            const tier = TIERS[Math.min(best.t, GEAR_CAP_TIER) - 1];
+            const next = TIERS[tier.t];
+
+            let text;
+            if (tier.coffer > ilvl) {
+                text = tier.vault
+                    ? `A láda (${tier.coffer}) és a térkép/vault (${tier.vault}) is upgrade.`
+                    : `A láda (${tier.coffer}) még upgrade.`;
+            } else if (tier.vault && tier.vault > ilvl) {
+                text = `A láda már ritkán upgrade, de a heti térkép/vault (${tier.vault}) még igen.`;
+            } else {
+                text = 'A láda már nem upgrade – amint bírod, lépj feljebb.';
+            }
+
+            let extra;
+            if (best.t > GEAR_CAP_TIER) {
+                extra = `Tier ${best.t}-et is bírod, de gearben nem ad többet a Tier 8-nál – csak crestért, Journey-ért, achievementért.`;
+            } else if (next && tier.t < GEAR_CAP_TIER) {
+                extra = `Következő lépcső: Tier ${next.t}, kb. ${next.entry} ilvl-től.`;
+            } else {
+                extra = `Tier 9 kb. 295 ilvl-től – gearben nem jobb, csak crestért.`;
+            }
+
+            return { tier, text, extra };
+        };
+
+        const numberInput = document.getElementById('ilvl');
+        const rangeInput = document.getElementById('ilvl-range');
+        const verdict = document.getElementById('verdict');
+        const verdictName = document.getElementById('verdict-name');
+        const verdictText = document.getElementById('verdict-text');
+        const verdictExtra = document.getElementById('verdict-extra');
+
+        const update = (ilvl) => {
+            const rows = document.querySelectorAll('#tier-rows tr');
+            const youLine = document.getElementById('you-line');
+            const youTag = document.getElementById('you-tag');
+
+            if (!Number.isFinite(ilvl) || ilvl < 1) {
+                verdictName.textContent = '–';
+                verdictText.textContent = 'Írd be az átlagos item leveled.';
+                verdictExtra.textContent = '';
+                verdict.className = 'verdict';
+                rows.forEach((r) => r.classList.remove('active'));
+                youLine.style.display = youTag.style.display = 'none';
+                return;
+            }
+
+            const { tier, text, extra } = recommend(ilvl);
+
+            verdictName.textContent = `Tier ${tier.t}`;
+            verdictText.textContent = text;
+            verdictExtra.textContent = extra;
+            verdict.className = `verdict ${tier.track}`;
+            rows.forEach((r) => r.classList.toggle('active', Number(r.dataset.tier) === tier.t));
+
+            const x = `${pct(ilvl)}%`;
+            youLine.style.display = youTag.style.display = '';
+            youLine.style.left = youTag.style.left = x;
+            youTag.textContent = ilvl < MIN ? `${ilvl} ◂` : ilvl > MAX ? `▸ ${ilvl}` : `te: ${ilvl}`;
+
+            try {
+                localStorage.setItem('delve-ilvl', String(ilvl));
+            } catch (e) {
+                // Tárolás nélkül is működik.
+            }
+        };
+
+        numberInput.addEventListener('input', () => {
+            const v = parseInt(numberInput.value, 10);
+            if (Number.isFinite(v)) {
+                rangeInput.value = Math.min(Math.max(v, MIN), MAX);
+            }
+            update(v);
+        });
+
+        rangeInput.addEventListener('input', () => {
+            numberInput.value = rangeInput.value;
+            update(parseInt(rangeInput.value, 10));
+        });
+
+        buildTable();
+        buildChart();
+
+        let start = 280;
+        try {
+            const saved = parseInt(localStorage.getItem('delve-ilvl'), 10);
+            if (Number.isFinite(saved)) {
+                start = saved;
+            }
+        } catch (e) {
+            // Nincs mentett érték.
+        }
+        numberInput.value = start;
+        rangeInput.value = Math.min(Math.max(start, MIN), MAX);
+        update(start);
+    </script>
+</body>
+</html>

@@ -69,7 +69,25 @@
         main {
             margin: 0 auto;
             max-width: 880px;
-            padding: 32px 16px 48px;
+            padding: 24px 16px 48px;
+        }
+        nav {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        nav a {
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            color: var(--muted);
+            font-size: .85rem;
+            padding: 4px 14px;
+            text-decoration: none;
+        }
+        nav a[aria-current="page"] {
+            background: var(--text);
+            border-color: var(--text);
+            color: var(--bg);
         }
         h1 {
             font-size: 1.9rem;
@@ -397,6 +415,11 @@
 </head>
 <body>
     <main>
+        <nav>
+            <a href="prey.html" aria-current="page">Prey</a>
+            <a href="delves.html">Delve</a>
+        </nav>
+
         <h1>Hányas ilvl-lel melyik Prey?</h1>
         <p class="sub">World of Warcraft: Midnight · Season 2 (12.1) · átlagos felszerelt item level alapján</p>
 
@@ -420,28 +443,28 @@
             <div class="cards">
                 <article class="card normal" data-key="normal">
                     <h3>Normal</h3>
-                    <div class="range">&lt; 262 ilvl<small>90-es szinttől; 266 fölött már ne</small></div>
+                    <div class="range">&lt; 270 ilvl<small>90-es szinttől, amíg a Hard még fáj</small></div>
                     <dl>
-                        <dt>Drop</dt><dd><b>266</b> · Adventurer 3/6</dd>
-                        <dt>Vault</dt><dd><b>279</b> · Veteran 3/6</dd>
+                        <dt>Drop</dt><dd><b>266</b> · Adventurer 1/6</dd>
+                        <dt>Vault</dt><dd><b>279</b> · Veteran 1/6</dd>
                     </dl>
-                    <p>Csak a Pack Ambush affix aktív, a nyílt világban mások is besegíthetnek. 266 fölött már csak idő&shy;pazarlás – válts Hardra.</p>
+                    <p>Csak a Pack Ambush affix aktív, a nyílt világban mások is besegíthetnek. 266 fölött a drop már nem upgrade – amint bírod, válts Hardra.</p>
                 </article>
                 <article class="card hard" data-key="hard">
                     <h3>Hard</h3>
-                    <div class="range">262 – 279 ilvl<small>~275-től már próbáld a Nightmare-t</small></div>
+                    <div class="range">270 – 284 ilvl<small>~280-tól már próbáld a Nightmare-t</small></div>
                     <dl>
-                        <dt>Drop</dt><dd><b>279</b> · Veteran 3/6</dd>
-                        <dt>Vault</dt><dd><b>292</b> · Champion 3/6</dd>
+                        <dt>Drop</dt><dd><b>279</b> · Veteran 1/6</dd>
+                        <dt>Vault</dt><dd><b>292</b> · Champion 1/6</dd>
                     </dl>
                     <p>Mindhárom affix aktív (Toxic Snare, Exploding Corpse Snakes, Pack Ambush), és innentől a halálnak ára van.</p>
                 </article>
                 <article class="card nightmare" data-key="nightmare">
                     <h3>Nightmare</h3>
-                    <div class="range">280+ ilvl<small>kényelmesen 285+, gearért ~305-ig</small></div>
+                    <div class="range">285+ ilvl<small>kényelmesen 290+, gearért 305-ig</small></div>
                     <dl>
-                        <dt>Drop</dt><dd><b>292</b> · Champion 3/6</dd>
-                        <dt>Vault</dt><dd><b>305</b> · Hero 3/6</dd>
+                        <dt>Drop</dt><dd><b>292</b> · Champion 1/6</dd>
+                        <dt>Vault</dt><dd><b>305</b> · Hero 1/6</dd>
                     </dl>
                     <p>A legkeményebb, gyakorlatilag solo tartalom. 305 fölött már nem ad gear-upgrade-et, csak crestek és a Prey journey miatt érdemes.</p>
                 </article>
@@ -466,11 +489,11 @@
                     <tr><th>Track</th><th>1/6</th><th>6/6</th><th>Prey</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>Adventurer</td><td>259</td><td>276</td><td>Normal drop</td></tr>
-                    <tr><td>Veteran</td><td>272</td><td>289</td><td>Hard drop · Normal vault</td></tr>
-                    <tr><td>Champion</td><td>285</td><td>302</td><td>Nightmare drop · Hard vault</td></tr>
-                    <tr><td>Hero</td><td>298</td><td>315</td><td>Nightmare vault</td></tr>
-                    <tr><td>Myth</td><td>311</td><td>328+</td><td>–</td></tr>
+                    <tr><td>Adventurer</td><td>266</td><td>282</td><td>Normal drop</td></tr>
+                    <tr><td>Veteran</td><td>279</td><td>295</td><td>Hard drop · Normal vault</td></tr>
+                    <tr><td>Champion</td><td>292</td><td>308</td><td>Nightmare drop · Hard vault</td></tr>
+                    <tr><td>Hero</td><td>305</td><td>321</td><td>Nightmare vault</td></tr>
+                    <tr><td>Myth</td><td>318</td><td>334+</td><td>–</td></tr>
                 </tbody>
             </table>
         </section>
@@ -480,7 +503,7 @@
             <ul>
                 <li>Egy nehézség addig éri meg, amíg a dropja (vagy a heti Great Vault itemje) jobb, mint amit hordasz, és közben elég erős vagy hozzá.</li>
                 <li>A Great Vaultba a legnehezebb teljesített Prey számít, ezért érdemes mindig a legnehezebbet csinálni, amit még biztonságosan megölsz.</li>
-                <li>A belépő ilvl-ek közösségi tapasztalatból jönnek: Season 1-ben kb. 240 volt a Nightmare-belépő a 246-os Champion drop mellett, ezt számoltam át a Season 2-es sávokra. Nem hivatalos számok.</li>
+                <li>A belépő ilvl-ek közösségi tapasztalatból jönnek: Season 1-ben kb. 240 volt a Nightmare-belépő, a Normal pedig 230 fölött már nem érte meg. Season 2-ben minden ilvl +46-tal nőtt, így ezek kb. 285 és 270–276 lettek. Nem hivatalos számok.</li>
                 <li>A class/spec sokat számít: gyenge self-heal vagy kevés CC mellett adj hozzá kb. 5 ilvl-t a küszöbökhöz.</li>
                 <li>Feloldás (Season 1 alapján): a Hard egy teljesített Normal után nyílik, a Nightmare a Prey journey 4. rangján.</li>
             </ul>
@@ -494,21 +517,24 @@
         const MAX = 320;
 
         const DIFFS = [
-            { key: 'normal', name: 'Normal', from: MIN, to: 266, fadeLeft: true, drop: 266, vault: 279 },
-            { key: 'hard', name: 'Hard', from: 262, to: 280, drop: 279, vault: 292 },
-            { key: 'nightmare', name: 'Nightmare', from: 280, to: 305, tailTo: MAX, drop: 292, vault: 305 },
+            { key: 'normal', name: 'Normal', from: MIN, to: 270, fadeLeft: true, drop: 266, vault: 279 },
+            { key: 'hard', name: 'Hard', from: 270, to: 285, drop: 279, vault: 292 },
+            { key: 'nightmare', name: 'Nightmare', from: 285, to: 305, tailTo: MAX, drop: 292, vault: 305 },
         ];
 
         const pct = (v) => ((Math.min(Math.max(v, MIN), MAX) - MIN) / (MAX - MIN)) * 100;
 
         const recommend = (ilvl) => {
-            if (ilvl < 262) {
-                return ['normal', 'A Normal drop (266) még upgrade, a Hard viszont még fájhat. 262 körül válts Hardra.'];
+            if (ilvl < 266) {
+                return ['normal', 'A Normal drop (266) még upgrade, a Hard viszont még fájhat. 270 körül válts Hardra.'];
             }
-            if (ilvl < 275) {
-                return ['hard', 'A Hard drop (279) és a vault (292) is jobb, mint amit most hordasz.'];
+            if (ilvl < 270) {
+                return ['normal', 'A Normal drop már nem upgrade, csak a vault (279). Ha bírod, inkább Hard.'];
             }
             if (ilvl < 280) {
+                return ['hard', 'A Hard drop (279) és a vault (292) is jobb, mint amit most hordasz.'];
+            }
+            if (ilvl < 285) {
                 return ['hard', 'Még a Hard a biztos, de a Nightmare-t már megpróbálhatod, ha a class-od jól bírja.'];
             }
             if (ilvl < 292) {
