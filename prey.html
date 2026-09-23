@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prey ilvl útmutató</title>
+    <style>
+        :root {
+            --bg: #f5f4f9;
+            --surface: #ffffff;
+            --surface-2: #eeecf4;
+            --text: #1c1930;
+            --muted: #5f5a75;
+            --border: #dcd8e7;
+            --normal: #23874b;
+            --normal-soft: #23874b22;
+            --hard: #b86e12;
+            --hard-soft: #b86e1222;
+            --nightmare: #8a36d4;
+            --nightmare-soft: #8a36d422;
+            --marker: #d6245a;
+            color-scheme: light;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --bg: #0d0b14;
+                --surface: #17141f;
+                --surface-2: #211d2c;
+                --text: #ece9f5;
+                --muted: #a39db7;
+                --border: #2f2a3d;
+                --normal: #4cc47a;
+                --normal-soft: #4cc47a26;
+                --hard: #f0a23c;
+                --hard-soft: #f0a23c26;
+                --nightmare: #b77cf2;
+                --nightmare-soft: #b77cf22b;
+                --marker: #ff5c8a;
+                color-scheme: dark;
+            }
+        }
+        :root[data-theme="dark"] {
+            --bg: #0d0b14;
+            --surface: #17141f;
+            --surface-2: #211d2c;
+            --text: #ece9f5;
+            --muted: #a39db7;
+            --border: #2f2a3d;
+            --normal: #4cc47a;
+            --normal-soft: #4cc47a26;
+            --hard: #f0a23c;
+            --hard-soft: #f0a23c26;
+            --nightmare: #b77cf2;
+            --nightmare-soft: #b77cf22b;
+            --marker: #ff5c8a;
+            color-scheme: dark;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.5;
+            margin: 0;
+        }
+        main {
+            margin: 0 auto;
+            max-width: 880px;
+            padding: 32px 16px 48px;
+        }
+        h1 {
+            font-size: 1.9rem;
+            line-height: 1.2;
+            margin: 0 0 6px;
+        }
+        h2 {
+            font-size: 1.1rem;
+            margin: 0 0 14px;
+        }
+        .sub {
+            color: var(--muted);
+            margin: 0 0 28px;
+        }
+        section {
+            margin-bottom: 28px;
+        }
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        /* --- Kalkulátor --- */
+        .calc {
+            align-items: center;
+            display: grid;
+            gap: 20px;
+            grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+        }
+        .calc label {
+            color: var(--muted);
+            display: block;
+            font-size: .85rem;
+            margin-bottom: 6px;
+        }
+        .calc input[type="number"] {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-size: 1.6rem;
+            font-variant-numeric: tabular-nums;
+            font-weight: 700;
+            padding: 8px 12px;
+            width: 100%;
+        }
+        .calc input[type="range"] {
+            accent-color: var(--marker);
+            margin-top: 12px;
+            width: 100%;
+        }
+        .verdict {
+            border-left: 4px solid var(--verdict, var(--border));
+            padding-left: 16px;
+        }
+        .verdict .label {
+            color: var(--muted);
+            font-size: .85rem;
+        }
+        .verdict .name {
+            color: var(--verdict, var(--text));
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+        .verdict p {
+            margin: 6px 0 0;
+        }
+
+        /* --- Kártyák --- */
+        .cards {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            border-top: 4px solid var(--c);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 16px;
+            transition: box-shadow .2s, transform .2s;
+        }
+        .card.active {
+            box-shadow: 0 0 0 2px var(--c);
+            transform: translateY(-2px);
+        }
+        .card h3 {
+            color: var(--c);
+            font-size: 1.25rem;
+            margin: 0;
+        }
+        .card .range {
+            font-size: 1.5rem;
+            font-variant-numeric: tabular-nums;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+        .card .range small {
+            color: var(--muted);
+            display: block;
+            font-size: .8rem;
+            font-weight: 500;
+        }
+        .card dl {
+            display: grid;
+            gap: 4px 10px;
+            grid-template-columns: auto 1fr;
+            margin: 0;
+        }
+        .card dt {
+            color: var(--muted);
+        }
+        .card dd {
+            font-variant-numeric: tabular-nums;
+            margin: 0;
+        }
+        .card dd b {
+            font-weight: 700;
+        }
+        .card p {
+            color: var(--muted);
+            font-size: .9rem;
+            margin: 0;
+        }
+        .normal {
+            --c: var(--normal);
+            --c-soft: var(--normal-soft);
+        }
+        .hard {
+            --c: var(--hard);
+            --c-soft: var(--hard-soft);
+        }
+        .nightmare {
+            --c: var(--nightmare);
+            --c-soft: var(--nightmare-soft);
+        }
+
+        /* --- Sávdiagram --- */
+        .chart {
+            padding-top: 24px;
+            position: relative;
+        }
+        .row {
+            align-items: center;
+            display: grid;
+            gap: 12px;
+            grid-template-columns: 96px minmax(0, 1fr);
+            height: 44px;
+        }
+        .row .rname {
+            color: var(--c);
+            font-weight: 700;
+        }
+        .track {
+            background: var(--surface-2);
+            border-radius: 6px;
+            height: 22px;
+            position: relative;
+        }
+        .band {
+            background: var(--c);
+            border-radius: 6px;
+            height: 100%;
+            position: absolute;
+            top: 0;
+        }
+        .band.fade-left {
+            background: linear-gradient(to right, transparent, var(--c) 40%);
+        }
+        .band.tail {
+            background: repeating-linear-gradient(45deg, var(--c-soft) 0 6px, transparent 6px 12px);
+            border: 1px dashed var(--c);
+        }
+        .tick {
+            background: var(--surface);
+            border: 2px solid var(--text);
+            height: 12px;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+            width: 12px;
+        }
+        .tick.vault {
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .axis {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: 96px minmax(0, 1fr);
+            margin-top: 4px;
+        }
+        .axis .scale {
+            color: var(--muted);
+            font-size: .75rem;
+            font-variant-numeric: tabular-nums;
+            height: 18px;
+            position: relative;
+        }
+        .axis .scale span {
+            position: absolute;
+            transform: translateX(-50%);
+        }
+        .you {
+            bottom: 22px;
+            left: 108px;
+            pointer-events: none;
+            position: absolute;
+            right: 0;
+            top: 16px;
+        }
+        .you .line {
+            background: var(--marker);
+            bottom: 0;
+            position: absolute;
+            top: 0;
+            transform: translateX(-1px);
+            width: 2px;
+        }
+        .you .tag {
+            background: var(--marker);
+            border-radius: 4px;
+            color: #fff;
+            font-size: .72rem;
+            font-weight: 700;
+            padding: 1px 6px;
+            position: absolute;
+            top: -16px;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+        .legend {
+            color: var(--muted);
+            display: flex;
+            flex-wrap: wrap;
+            font-size: .85rem;
+            gap: 8px 20px;
+            margin-top: 14px;
+        }
+        .legend span {
+            align-items: center;
+            display: inline-flex;
+            gap: 8px;
+        }
+        .legend .tick {
+            position: static;
+            transform: rotate(45deg);
+        }
+        .legend .tick.vault {
+            transform: none;
+        }
+        .legend .sw {
+            border-radius: 3px;
+            display: inline-block;
+            height: 12px;
+            width: 22px;
+        }
+
+        /* --- Táblázat, lábjegyzet --- */
+        .tracks {
+            border-collapse: collapse;
+            font-variant-numeric: tabular-nums;
+            width: 100%;
+        }
+        .tracks th,
+        .tracks td {
+            border-bottom: 1px solid var(--border);
+            padding: 8px 6px;
+            text-align: left;
+        }
+        .tracks th {
+            color: var(--muted);
+            font-size: .8rem;
+            font-weight: 600;
+        }
+        .tracks tr:last-child td {
+            border-bottom: 0;
+        }
+        .notes {
+            color: var(--muted);
+            font-size: .9rem;
+        }
+        .notes ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .notes li + li {
+            margin-top: 6px;
+        }
+
+        @media (max-width: 720px) {
+            .cards {
+                grid-template-columns: minmax(0, 1fr);
+            }
+            .calc {
+                grid-template-columns: minmax(0, 1fr);
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+        @media (max-width: 420px) {
+            .row,
+            .axis {
+                grid-template-columns: 80px minmax(0, 1fr);
+                gap: 8px;
+            }
+            .row .rname {
+                font-size: .85rem;
+            }
+            .axis .scale .minor {
+                display: none;
+            }
+            .you {
+                left: 88px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Hányas ilvl-lel melyik Prey?</h1>
+        <p class="sub">World of Warcraft: Midnight · Season 2 (12.1) · átlagos felszerelt item level alapján</p>
+
+        <section class="panel">
+            <div class="calc">
+                <div>
+                    <label for="ilvl">A te item leveled</label>
+                    <input id="ilvl" type="number" min="200" max="340" step="1" value="270" inputmode="numeric">
+                    <input id="ilvl-range" type="range" min="250" max="320" step="1" value="270" aria-label="Item level csúszka">
+                </div>
+                <div class="verdict" id="verdict">
+                    <div class="label">Neked most ez éri meg:</div>
+                    <div class="name" id="verdict-name">–</div>
+                    <p id="verdict-text"></p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Nehézségek</h2>
+            <div class="cards">
+                <article class="card normal" data-key="normal">
+                    <h3>Normal</h3>
+                    <div class="range">&lt; 262 ilvl<small>90-es szinttől; 266 fölött már ne</small></div>
+                    <dl>
+                        <dt>Drop</dt><dd><b>266</b> · Adventurer 3/6</dd>
+                        <dt>Vault</dt><dd><b>279</b> · Veteran 3/6</dd>
+                    </dl>
+                    <p>Csak a Pack Ambush affix aktív, a nyílt világban mások is besegíthetnek. 266 fölött már csak idő&shy;pazarlás – válts Hardra.</p>
+                </article>
+                <article class="card hard" data-key="hard">
+                    <h3>Hard</h3>
+                    <div class="range">262 – 279 ilvl<small>~275-től már próbáld a Nightmare-t</small></div>
+                    <dl>
+                        <dt>Drop</dt><dd><b>279</b> · Veteran 3/6</dd>
+                        <dt>Vault</dt><dd><b>292</b> · Champion 3/6</dd>
+                    </dl>
+                    <p>Mindhárom affix aktív (Toxic Snare, Exploding Corpse Snakes, Pack Ambush), és innentől a halálnak ára van.</p>
+                </article>
+                <article class="card nightmare" data-key="nightmare">
+                    <h3>Nightmare</h3>
+                    <div class="range">280+ ilvl<small>kényelmesen 285+, gearért ~305-ig</small></div>
+                    <dl>
+                        <dt>Drop</dt><dd><b>292</b> · Champion 3/6</dd>
+                        <dt>Vault</dt><dd><b>305</b> · Hero 3/6</dd>
+                    </dl>
+                    <p>A legkeményebb, gyakorlatilag solo tartalom. 305 fölött már nem ad gear-upgrade-et, csak crestek és a Prey journey miatt érdemes.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Tartományok egy pillantásra</h2>
+            <div class="chart" id="chart"></div>
+            <div class="legend">
+                <span><i class="sw" style="background: var(--muted)"></i>ajánlott ilvl-sáv</span>
+                <span><i class="sw" style="background: repeating-linear-gradient(45deg, var(--surface-2) 0 4px, var(--muted) 4px 6px)"></i>már csak crestért</span>
+                <span><i class="tick"></i>drop ilvl</span>
+                <span><i class="tick vault"></i>Great Vault ilvl</span>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2>Season 2 upgrade trackek</h2>
+            <table class="tracks">
+                <thead>
+                    <tr><th>Track</th><th>1/6</th><th>6/6</th><th>Prey</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Adventurer</td><td>259</td><td>276</td><td>Normal drop</td></tr>
+                    <tr><td>Veteran</td><td>272</td><td>289</td><td>Hard drop · Normal vault</td></tr>
+                    <tr><td>Champion</td><td>285</td><td>302</td><td>Nightmare drop · Hard vault</td></tr>
+                    <tr><td>Hero</td><td>298</td><td>315</td><td>Nightmare vault</td></tr>
+                    <tr><td>Myth</td><td>311</td><td>328+</td><td>–</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="notes">
+            <h2>Hogyan jött ki</h2>
+            <ul>
+                <li>Egy nehézség addig éri meg, amíg a dropja (vagy a heti Great Vault itemje) jobb, mint amit hordasz, és közben elég erős vagy hozzá.</li>
+                <li>A Great Vaultba a legnehezebb teljesített Prey számít, ezért érdemes mindig a legnehezebbet csinálni, amit még biztonságosan megölsz.</li>
+                <li>A belépő ilvl-ek közösségi tapasztalatból jönnek: Season 1-ben kb. 240 volt a Nightmare-belépő a 246-os Champion drop mellett, ezt számoltam át a Season 2-es sávokra. Nem hivatalos számok.</li>
+                <li>A class/spec sokat számít: gyenge self-heal vagy kevés CC mellett adj hozzá kb. 5 ilvl-t a küszöbökhöz.</li>
+                <li>Feloldás (Season 1 alapján): a Hard egy teljesített Normal után nyílik, a Nightmare a Prey journey 4. rangján.</li>
+            </ul>
+        </section>
+    </main>
+
+    <script>
+        'use strict';
+
+        const MIN = 250;
+        const MAX = 320;
+
+        const DIFFS = [
+            { key: 'normal', name: 'Normal', from: MIN, to: 266, fadeLeft: true, drop: 266, vault: 279 },
+            { key: 'hard', name: 'Hard', from: 262, to: 280, drop: 279, vault: 292 },
+            { key: 'nightmare', name: 'Nightmare', from: 280, to: 305, tailTo: MAX, drop: 292, vault: 305 },
+        ];
+
+        const pct = (v) => ((Math.min(Math.max(v, MIN), MAX) - MIN) / (MAX - MIN)) * 100;
+
+        const recommend = (ilvl) => {
+            if (ilvl < 262) {
+                return ['normal', 'A Normal drop (266) még upgrade, a Hard viszont még fájhat. 262 körül válts Hardra.'];
+            }
+            if (ilvl < 275) {
+                return ['hard', 'A Hard drop (279) és a vault (292) is jobb, mint amit most hordasz.'];
+            }
+            if (ilvl < 280) {
+                return ['hard', 'Még a Hard a biztos, de a Nightmare-t már megpróbálhatod, ha a class-od jól bírja.'];
+            }
+            if (ilvl < 292) {
+                return ['nightmare', 'A Nightmare drop (292) és a Hero vault (305) is upgrade.'];
+            }
+            if (ilvl < 305) {
+                return ['nightmare', 'A drop már ritkán upgrade, de a 305-ös Hero vault item még igen.'];
+            }
+            return ['nightmare', 'Gear szempontjából már nem ad upgrade-et – csak crestek és a Prey journey miatt érdemes.'];
+        };
+
+        const chart = document.getElementById('chart');
+
+        const buildChart = () => {
+            const rows = DIFFS.map((d) => {
+                const band = `<div class="band${d.fadeLeft ? ' fade-left' : ''}" style="left:${pct(d.from)}%;width:${pct(d.to) - pct(d.from)}%"></div>`;
+                const tail = d.tailTo
+                    ? `<div class="band tail" style="left:${pct(d.to)}%;width:${pct(d.tailTo) - pct(d.to)}%"></div>`
+                    : '';
+                return `
+                    <div class="row ${d.key}">
+                        <div class="rname">${d.name}</div>
+                        <div class="track">
+                            ${band}${tail}
+                            <i class="tick" style="left:${pct(d.drop)}%" title="Drop: ${d.drop}"></i>
+                            <i class="tick vault" style="left:${pct(d.vault)}%" title="Great Vault: ${d.vault}"></i>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            const ticks = [];
+            for (let v = MIN; v <= MAX; v += 10) {
+                ticks.push(`<span${(v - MIN) % 20 ? ' class="minor"' : ''} style="left:${pct(v)}%">${v}</span>`);
+            }
+
+            chart.innerHTML = `
+                ${rows}
+                <div class="axis"><div></div><div class="scale">${ticks.join('')}</div></div>
+                <div class="you"><div class="line" id="you-line"></div><div class="tag" id="you-tag"></div></div>`;
+        };
+
+        const numberInput = document.getElementById('ilvl');
+        const rangeInput = document.getElementById('ilvl-range');
+        const verdict = document.getElementById('verdict');
+        const verdictName = document.getElementById('verdict-name');
+        const verdictText = document.getElementById('verdict-text');
+
+        const update = (ilvl) => {
+            const cards = document.querySelectorAll('.card');
+            const youLine = document.getElementById('you-line');
+            const youTag = document.getElementById('you-tag');
+
+            if (!Number.isFinite(ilvl) || ilvl < 1) {
+                verdictName.textContent = '–';
+                verdictText.textContent = 'Írd be az átlagos item leveled.';
+                verdict.style.removeProperty('--verdict');
+                cards.forEach((c) => c.classList.remove('active'));
+                youLine.style.display = youTag.style.display = 'none';
+                return;
+            }
+
+            const [key, text] = recommend(ilvl);
+            const diff = DIFFS.find((d) => d.key === key);
+
+            verdictName.textContent = diff.name;
+            verdictText.textContent = text;
+            verdict.style.setProperty('--verdict', `var(--${key})`);
+            cards.forEach((c) => c.classList.toggle('active', c.dataset.key === key));
+
+            const x = `${pct(ilvl)}%`;
+            youLine.style.display = youTag.style.display = '';
+            youLine.style.left = youTag.style.left = x;
+            youTag.textContent = ilvl < MIN ? `${ilvl} ◂` : ilvl > MAX ? `▸ ${ilvl}` : `te: ${ilvl}`;
+
+            try {
+                localStorage.setItem('prey-ilvl', String(ilvl));
+            } catch (e) {
+                // Tárolás nélkül is működik.
+            }
+        };
+
+        numberInput.addEventListener('input', () => {
+            const v = parseInt(numberInput.value, 10);
+            if (Number.isFinite(v)) {
+                rangeInput.value = Math.min(Math.max(v, MIN), MAX);
+            }
+            update(v);
+        });
+
+        rangeInput.addEventListener('input', () => {
+            numberInput.value = rangeInput.value;
+            update(parseInt(rangeInput.value, 10));
+        });
+
+        buildChart();
+
+        let start = 270;
+        try {
+            const saved = parseInt(localStorage.getItem('prey-ilvl'), 10);
+            if (Number.isFinite(saved)) {
+                start = saved;
+            }
+        } catch (e) {
+            // Nincs mentett érték.
+        }
+        numberInput.value = start;
+        rangeInput.value = Math.min(Math.max(start, MIN), MAX);
+        update(start);
+    </script>
+</body>
+</html>
